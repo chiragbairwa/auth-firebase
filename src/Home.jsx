@@ -3,27 +3,25 @@ import { Link, useNavigate } from 'react-router-dom'
 import { onAuthStateChanged, signOut } from "firebase/auth"
 
 import { auth } from '../firebase/firebase'
+import toast from 'react-hot-toast'
 
-export const Home = ()=>{
+export const Home = () => {
   const [User, setUser] = useState(null)
   const navigate = useNavigate()
 
   useEffect(()=>{
-    onAuthStateChanged(auth, (user) => {
-      if(user){
-        setUser(user)
-      }
-      return;
-    }
-    )
-  })
+    onAuthStateChanged(auth, user => {
+      user && setUser(user)
+    })
+  },[])
 
   const handleSignOut = async ()=>{
     await signOut(auth)
     .then(() => {
       // Sign-out successful.
-      navigate("/signin");
       setUser(null)
+      toast("Signed Out")
+      navigate("/signin");
       console.log("Signed out successfully")
     })
     .catch((error) => {
@@ -37,13 +35,16 @@ export const Home = ()=>{
   return (
     <>
     {User ? 
-      <h1>uid {" - " + User.uid}</h1> 
-      : 
-      <h1>Sign In First</h1>
+      <>
+        <h1>uid {" - " + User.uid}</h1> 
+        <button onClick={handleSignOut}>LogOut</button>
+      </>
+      :
+      <>
+        <h1>Sign In First</h1>
+        <Link to="/signin" className='btn'>Sign In</Link>
+      </>
     }
-    
-    {User && <button onClick={handleSignOut}>LogOut</button>}
-    {!User && <Link to="/signin" className='btn'>Sign In</Link>}
     </>
   )
 }

@@ -1,18 +1,17 @@
 import './auth.css'
 import { useState, useEffect } from "react"
-import { NavLink, useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { containsCapital, containsLower, containsNumber, validLength } from './validations'
 import { createUserWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
 import { auth } from "../../firebase/firebase";
+import toast from 'react-hot-toast'
 
 export const SignUp = () => {
   const navigate = useNavigate()
 
   useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      user && navigate("/")
-    })
-  })
+    onAuthStateChanged(auth, user => { user && navigate("/") })
+  },[])
 
   const [formData, setFormData] = useState({
     email: '',
@@ -24,17 +23,16 @@ export const SignUp = () => {
     if (formData.password === formData.confirmPassword) {
       switch (true) {
         case containsCapital(formData.password):
-          console.log("containsCapital")
+          console.log("Contains Capital")
 
         case containsLower(formData.password):
-          console.log("containsLower")
+          console.log("Contains Lowercase")
 
         case containsNumber(formData.password):
-          console.log("containsNumber")
+          console.log("Contains Number")
 
         case validLength(formData.password):
-          console.log(formData)
-          await createUserWithEmailAndPassword(auth, formData.email, formData.password)
+          createUserWithEmailAndPassword(auth, formData.email, formData.password)
             .then(async (userCredential) => {
               const { email, uid, displayName, emailVerified } = userCredential.user
               const data = {
@@ -43,7 +41,7 @@ export const SignUp = () => {
                 username: displayName,
                 emailVerified: emailVerified
               }
-              console.log(data)
+              toast('Signed Up')
             })
             .catch((error) => {
               console.log(error)
@@ -55,6 +53,7 @@ export const SignUp = () => {
       console.log("Password does not Match")
     }
   }
+  
   const onChangeHandler = (event) => {
     const data = {
       ...formData,
@@ -73,9 +72,10 @@ export const SignUp = () => {
       <div>
         <button type="submit">Sign Up</button>
       </div>
-      <NavLink to="/signin">
-        Already have an account ? Sign In
-      </NavLink>
+      <span>
+        {`Already have an account ? `}
+        <Link to="/signin">Sign In</Link>
+      </span>
     </form>
   )
 }

@@ -1,8 +1,8 @@
 import './App.css'
 
-import Home from './Home';
-import SignIn from './auth/signin'
-import SignUp from './auth/signup'
+import { Home } from './Home';
+import { SignIn } from './auth/signin'
+import { SignUp } from './auth/signup'
 
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 

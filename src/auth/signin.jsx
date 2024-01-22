@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom"
 
 import { auth } from "../../firebase/firebase"
 import { onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth"
+import toast from 'react-hot-toast'
 
 export const SignIn = () => {
   const navigate = useNavigate()
@@ -17,12 +18,14 @@ export const SignIn = () => {
     onAuthStateChanged(auth, (user) => {
       user && navigate("/")
     })
-  })
+  },[])
+
   const submitHandler = async (event) => {
     event.preventDefault()
 
-    await signInWithEmailAndPassword(auth, formData.email, formData.password)
+    signInWithEmailAndPassword(auth, formData.email, formData.password)
       .then((userCredential) => {
+        toast("Signed In")
         navigate("/")
       })
       .catch((error) => {
@@ -48,11 +51,8 @@ export const SignIn = () => {
 
       <div>
         <button type="submit">Sign In</button>
-        <Link to="/signup">
-          Sign Up
-        </Link>
+        <Link to="/signup">Sign Up</Link>
       </div>
-
     </form>
   )
 }
